@@ -25,13 +25,39 @@ world.print_rooms()
 
 player = Player(world.starting_room)
 
+direction_flipped = {'w': 'e', 's': 'n', 'e': 'w', 'n': 's'}
+
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+def travel_path(prev_rooms=[]):
+    player_room = player.current_room
+    dir_flipped = direction_flipped
+    prev_direction = []
+# Start off by finding all of the potential exits in the player's current room,
+# then move the player towards the exit.
+    for direction in player_room.get_exits():
+        player.travel(direction)
+# If the player has not been to their current room (not in prev_rooms), 
+# add it to the previous rooms list now (prev_rooms.append(player_room.id))
 
+        if player.current_room.id not in prev_rooms:
+            prev_direction.append(direction)
+            prev_rooms.append(player_room.id)
+# Add the new previous rooms to prev_direction from travel_path, then 
+# move the player.
+            prev_direction = prev_direction + travel_path(prev_rooms)
+            player.travel(dir_flipped[direction])
+            prev_direction.append(dir_flipped[direction])
+        else:
+            player.travel(dir_flipped[direction])
 
-# TRAVERSAL TEST - DO NOT MODIFY
+    return prev_direction
+
+traversal_path = travel_path() 
+
+# TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
 visited_rooms.add(player.current_room)
@@ -48,15 +74,21 @@ else:
 
 
 
+
+
+
+
+
+
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
